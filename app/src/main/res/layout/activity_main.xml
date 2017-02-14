@@ -39,15 +39,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tv3"
-        android:text="Sound"
+        android:text="@string/sound"
         android:layout_below="@id/tv1"/>
 
     <Switch
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/sw"/>
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/sw"/>
+        android:id="@+id/tv4"
+        android:layout_below="@id/sw"/>
 
 
 </LinearLayout>

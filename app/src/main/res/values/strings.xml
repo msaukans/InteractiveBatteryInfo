@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Interactive Battery Info</string>
+    <string name="perc"> % </string>
+    <string name="sound">sound</string>
 </resources>

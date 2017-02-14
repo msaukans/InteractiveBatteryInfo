@@ -12,32 +12,43 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.media.MediaPlayer;
 
 public class MainActivity extends AppCompatActivity {
 
-    public TextView contentTxt,tv2;
+    public TextView contentTxt,tv2,tv3;
     private Switch sw;
+    SharedPreferences sharedPreferences;
 
     public BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
             int level = intent.getIntExtra("level", 0);
-            contentTxt.setText(String.valueOf(level) + "%");
+            contentTxt.setText(String.valueOf(level) + "% ");
 
           if (level == 100){
-                Toast.makeText(getApplicationContext(), "Maximum battery capacity reached", Toast.LENGTH_SHORT).show();
+              Toast.makeText(getApplicationContext(), "Maximum battery capacity reached", Toast.LENGTH_SHORT).show();
               addNot();
+              if(sw.isChecked()){
+                  final MediaPlayer sound = MediaPlayer.create(MainActivity.this, R.raw.overcharge);
+                  sound.start();
+              }
             }
           else if(level == 2){
-                Toast.makeText(getApplicationContext(), "Im about to die, save me human", Toast.LENGTH_SHORT).show();
+              Toast.makeText(getApplicationContext(), "Im about to die, save me human", Toast.LENGTH_SHORT).show();
               addNot2();
-            }
+              if(sw.isChecked()){
+                  final MediaPlayer sound = MediaPlayer.create(MainActivity.this, R.raw.die);
+                  sound.start();
+              }
+          }
             
         }
-    };
+    };//end BroadcastReceiver
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,35 +56,35 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         contentTxt = (TextView) this.findViewById(R.id.tv1);
         tv2 = (TextView) this.findViewById(R.id.tv2);
+        tv3 = (TextView) this.findViewById(R.id.tv3);
         sw = (Switch) findViewById(R.id.sw);
 
         Intent i = new Intent(this, MyService.class);
         startService(i);
 
+        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-
-        this.registerReceiver(this.mBatInfoReceiver,
-                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
 
         //reading switch saved data
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         sw.setChecked(sharedPreferences.getBoolean("switch", false));  //default is false
+
 
         //set up switch on or off if the button gets clicked
         sw.setOnClickListener(new Switch.OnClickListener() {
-
             public void onClick(View v) {
-                SharedPreferences sharedPreferences = PreferenceManager
-                        .getDefaultSharedPreferences(getApplicationContext());
+                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("switch", sw.isChecked());
-                editor.commit();
+                editor.apply();
             }
         });
 
-    }
+    }//end onCreate
+
+
+
 
     private void addNot() {
         NotificationCompat.Builder builder =
@@ -90,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // Add as notification
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, builder.build());
-    }
+    }//end addNot method
 
     private void addNot2() {
         NotificationCompat.Builder builder =
@@ -107,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         // Add as notification
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, builder.build());
-    }
+    }//end addNot2 method
 
     @Override
     protected void onPostResume() {
@@ -131,4 +142,4 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
     }
 
-}
+}//end MainAcitivty class
